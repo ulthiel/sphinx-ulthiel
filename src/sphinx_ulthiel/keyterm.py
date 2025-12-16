@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from docutils import nodes
 from docutils.parsers.rst import roles
+from sphinx import addnodes  # <-- this is the important change
 
 
 def _split_display_and_indices(text: str) -> tuple[str, list[str] | None]:
@@ -53,9 +54,9 @@ def keyterm_role(
     if not indices:
         return [term_node], []
 
-    # Create one index node per entry
+    # One Sphinx index node per entry
     index_nodes = [
-        nodes.index(entries=[("single", entry, entry, "", None)])
+        addnodes.index(entries=[("single", entry, entry, "", None)])
         for entry in indices
     ]
 
