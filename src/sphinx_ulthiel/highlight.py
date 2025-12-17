@@ -13,13 +13,8 @@ def highlight_role(
     options=None,
     content=None,
 ):
-    """
-    :highlight:`arbitrary inline text`
 
-    Semantic emphasis only.
-    No indexing. Styling via CSS (.highlight).
-    """
-    node = nodes.inline(text, text, classes=["highlight"])
+    node = nodes.inline(text, text, classes=["highlight-text"])
     return [node], []
 
 
