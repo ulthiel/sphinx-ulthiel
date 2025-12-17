@@ -49,18 +49,16 @@ def keyterm_role(
 ):
     display, indices = _split_display_and_indices(text)
 
-    # Visible inline node
     term_node = nodes.inline(display, display, classes=["keyterm"])
 
     # No indexing → no anchor
     if not indices:
         return [term_node], []
 
-    # Create a namespaced, stable anchor for indexing
-    anchor_id = make_id(f"index-{display}")
+    # Create a namespaced, document-unique anchor
+    anchor_id = make_id(f"index-{display}", inliner.document)
     target = nodes.target("", "", ids=[anchor_id])
 
-    # Create index entries pointing to the anchor
     index_nodes = [
         addnodes.index(
             entries=[("single", entry, anchor_id, "", None)]
@@ -68,7 +66,6 @@ def keyterm_role(
         for entry in indices
     ]
 
-    # Order matters: target → index → visible text
     return [target, *index_nodes, term_node], []
 
 
