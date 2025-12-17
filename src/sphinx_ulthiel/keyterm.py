@@ -2,24 +2,25 @@ from __future__ import annotations
 
 from docutils import nodes
 from docutils.parsers.rst import roles
-from sphinx import addnodes  # <-- this is the important change
+from sphinx import addnodes
+from sphinx.util.nodes import make_id
 
 
 def _split_display_and_indices(text: str) -> tuple[str, list[str] | None]:
     """
-    Syntax supported:
+    Supported syntax:
 
       :keyterm:`morphism`
-        -> display="morphism", no index
+        -> visible only, no index, no anchor
 
       :keyterm:`morphism <>`
-        -> display="morphism", explicitly no index
+        -> visible only, explicit no index
 
-      :keyterm:`morphism <affine algebraic variety; morphism>`
-        -> one index entry
+      :keyterm:`morphism <matroid>`
+        -> visible + index entry + anchor
 
-      :keyterm:`morphism <affine algebraic variety; morphism | morphism; affine algebraic varieties>`
-        -> multiple index entries
+      :keyterm:`morphism <matroid; morphism | morphism; matroid>`
+        -> visible + multiple index entries + anchor
     """
     t = text.strip()
 
@@ -48,19 +49,27 @@ def keyterm_role(
 ):
     display, indices = _split_display_and_indices(text)
 
-    # Inline node for styling (HTML class "keyterm")
+    # Visible inline node
     term_node = nodes.inline(display, display, classes=["keyterm"])
 
+    # No indexing → no anchor
     if not indices:
         return [term_node], []
 
-    # One Sphinx index node per entry
+    # Create a namespaced, stable anchor for indexing
+    anchor_id = make_id(f"index-{display}")
+    target = nodes.target("", "", ids=[anchor_id])
+
+    # Create index entries pointing to the anchor
     index_nodes = [
-        addnodes.index(entries=[("single", entry, entry, "", None)])
+        addnodes.index(
+            entries=[("single", entry, anchor_id, "", None)]
+        )
         for entry in indices
     ]
 
-    return index_nodes + [term_node], []
+    # Order matters: target → index → visible text
+    return [target, *index_nodes, term_node], []
 
 
 def setup_keyterm(app) -> None:
