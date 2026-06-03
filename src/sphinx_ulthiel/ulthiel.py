@@ -1,5 +1,6 @@
 from .keyterm import setup_keyterm
 from .highlight import setup_highlight
+from .secref import setup_secref
 
 def setup(app):
     app.add_config_value("show_solutions", False, "env")
