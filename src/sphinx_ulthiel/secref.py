@@ -5,7 +5,11 @@ from typing import Any
 from docutils import nodes
 from docutils.parsers.rst import roles
 from sphinx.application import Sphinx
+from sphinx.util import logging
 from sphinx.util.nodes import make_refnode
+
+
+logger = logging.getLogger(__name__)
 
 
 class secref_node(nodes.Inline, nodes.Element):
@@ -34,11 +38,12 @@ def resolve_secref(app: Sphinx, doctree: nodes.document, fromdocname: str) -> No
         target = node["reftarget"]
 
         if target not in labels:
-            msg = app.reporter.warning(
-                f"unknown secref target: {target}",
+            logger.warning(
+                "unknown secref target: %s",
+                target,
                 location=node,
             )
-            node.replace_self(msg)
+            node.replace_self(nodes.Text(f"??{target}??"))
             continue
 
         docname, labelid, sectname = labels[target]
