@@ -7,6 +7,7 @@ def setup(app):
 
     setup_keyterm(app)
     setup_highlight(app)
+    setup_secref(app)
 
     return {
         "version": "0.2.0",
