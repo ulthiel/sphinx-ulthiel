@@ -30,6 +30,43 @@ def secref_role(
     return [node], []
 
 
+def find_secnum(env: Any, docname: str, labelid: str, sectname: str):
+    secnumbers = env.toc_secnumbers.get(docname, {})
+
+    # First try the obvious keys.
+    candidates = [
+        labelid,
+        labelid.lstrip("#"),
+        "#" + labelid.lstrip("#"),
+    ]
+
+    for candidate in candidates:
+        if candidate in secnumbers:
+            return secnumbers[candidate]
+
+    # MyST explicit labels may point to a target before the section,
+    # while toc_secnumbers uses the actual generated section id.
+    toc = env.tocs.get(docname)
+    if toc is None:
+        return None
+
+    for ref in toc.findall(nodes.reference):
+        if ref.astext() != sectname:
+            continue
+
+        anchor = ref.get("anchorname", "")
+        refid = anchor.lstrip("#")
+
+        for candidate in [refid, "#" + refid]:
+            if candidate in secnumbers:
+                return secnumbers[candidate]
+
+        if "secnumber" in ref:
+            return ref["secnumber"]
+
+    return None
+
+
 def resolve_secref(app: Sphinx, doctree: nodes.document, fromdocname: str) -> None:
     env = app.builder.env
     labels = env.domains["std"].data["labels"]
@@ -48,7 +85,7 @@ def resolve_secref(app: Sphinx, doctree: nodes.document, fromdocname: str) -> No
 
         docname, labelid, sectname = labels[target]
 
-        secnum = env.toc_secnumbers.get(docname, {}).get(labelid)
+        secnum = find_secnum(env, docname, labelid, sectname)
 
         if secnum:
             reftext = ".".join(str(i) for i in secnum) + " " + sectname
