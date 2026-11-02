@@ -1,6 +1,6 @@
 [project]
 name = "sphinx-ulthiel"
-version = "0.1.0"
+version = "0.3.0"
 description = "A simple Sphinx extension to handle extra stuff for ulthiel."
 authors = [
   { name = "Ulrich Thiel", email = "ulrich.thiel@math.rptu.de" }
@@ -9,6 +9,15 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.8"
 dependencies = ["sphinx>=5"]
+
+[project.optional-dependencies]
+test = [
+  "beautifulsoup4",
+  "myst-parser>=3",
+  "sphinx-multitoc-numbering",
+  "sphinx-external-toc",
+  "sphinx-proof @ git+https://github.com/ulthiel/sphinx-proof.git",
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

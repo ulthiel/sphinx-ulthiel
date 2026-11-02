@@ -44,12 +44,17 @@ def find_secnum(env: Any, docname: str, labelid: str, sectname: str):
         if candidate in secnumbers:
             return secnumbers[candidate]
 
-    # MyST explicit labels may point to a target before the section,
-    # while toc_secnumbers uses the actual generated section id.
+    # Resolve explicit labels by section identity before comparing titles.
+    # Different sections may have identical titles.
     toc = env.tocs.get(docname)
     if toc is None:
         return None
 
+    for ref in toc.findall(nodes.reference):
+        if labelid.lstrip("#") in ref.get("ulthiel_section_ids", []):
+            return secnumbers.get(ref.get("anchorname", ""))
+
+    # Compatibility with doctrees collected before section IDs were recorded.
     for ref in toc.findall(nodes.reference):
         if ref.astext() != sectname:
             continue
