@@ -6,6 +6,8 @@ from .unnumbered import setup_unnumbered
 def setup(app):
     app.add_config_value("show_solutions", False, "env")
     app.add_config_value("show_private", False, "env")
+    app.add_config_value("show_teacher", False, "env")
+    app.add_config_value("show_course_scope", False, "env")
 
     setup_keyterm(app)
     setup_highlight(app)

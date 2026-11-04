@@ -4,8 +4,47 @@ My personal extra struff for the Sphinx documentation engine.
 
 * New config variable `show_solutions` (default false) to be used with ifconfig to toggle showing solutions for exercises or not.
 * New config variable `show_private` (default false) to be used with ifconfig to toggle showing private sections or not.
+* New config variable `show_teacher` (default false) to be used with ifconfig to show teaching notes in instructor builds.
+* New config variable `show_course_scope` (default false) to be used with ifconfig to mark the material assigned in a course.
 * New role {keyterm} for typesetting terms (class keyterm) and automatically adding them to the index.
 * New role {highlight} for highlighting text (class highlight-text).
+
+## Course scope
+
+Enable `show_course_scope` in student and instructor builds to show brief
+annotations identifying supplementary sections, optional proofs, and additional
+exercise parts. Leave it false for a reading version without course annotations.
+The flag does not hide any mathematical content.
+
+With MyST Markdown and `sphinx.ext.ifconfig`, write:
+
+```md
+::::{ifconfig} show_course_scope
+:::{admonition} Further study
+This section and its subsections are supplementary reading.
+:::
+::::
+```
+
+Place each annotation at the highest heading to which it applies. For a mixed
+section, identify only the optional passage or proof. Use `show_teacher`
+separately if an instructor also needs private classroom instructions.
+
+## Teaching notes
+
+Set `show_teacher = True` in instructor builds to include comments about lecture
+scope, omitted proofs, or classroom demonstrations. Leave it false in student
+builds. The flag is independent of `show_solutions` and `show_private`.
+
+With MyST Markdown and `sphinx.ext.ifconfig`, write:
+
+```md
+::::{ifconfig} show_teacher
+:::{admonition} Teaching note
+Skip this section and its subsections in the lecture.
+:::
+::::
+```
 
 ## Unnumbered sections in the table of contents
 
