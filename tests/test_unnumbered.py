@@ -239,11 +239,11 @@ proof_shared_counter = True
             for label, title in {
                 "alpha-intro": "Introduction",
                 "alpha-intro-child": "Nested introduction",
-                "alpha-main": "1.1 Overview",
+                "alpha-main": "Section 1.1",
                 "alpha-aside": "Overview",
                 "alpha-deep": "Deep appendix",
-                "alpha-child": "1.1.1 Numbered child",
-                "alpha-next": "1.2 Next",
+                "alpha-child": "Section 1.1.1",
+                "alpha-next": "Section 1.2",
             }.items():
                 self.assert_reference(app, "refs", label, title)
             self.assert_reference(app, "refs", "alpha-main", "custom text")
@@ -393,7 +393,7 @@ chapters:
             self.assert_heading(app, "chapter", "alpha-deep", None)
             self.assert_heading(app, "chapter", "alpha-child", "I.1.1")
             self.assert_heading(app, "chapter", "alpha-next", "I.2")
-            self.assert_reference(app, "refs", "alpha-main", "I.1 Overview")
+            self.assert_reference(app, "refs", "alpha-main", "Section I.1")
             self.assert_reference(app, "refs", "alpha-aside", "Overview")
             self.assertEqual(app.env.toc_fignumbers["chapter"]["figure"]["fig-inside"], ("I", 1, 2))
             self.assertEqual(app.env.toc_fignumbers["chapter"]["proof"]["statement-inside"], ("I", 1, 2))
@@ -402,12 +402,12 @@ chapters:
         self.prepare()
         self.write({"refs.md": "# References\n\n{secref}`alpha-main`\n"})
         with self.app() as app:
-            self.assert_reference(app, "refs", "alpha-main", "1.1 Overview")
+            self.assert_reference(app, "refs", "alpha-main", "Section 1.1")
         source = self.src / "chapter.md"
         source.write_text(source.read_text().replace("{.unnumbered}\n", "", 1))
         with self.app(freshenv=False) as app:
             self.assert_heading(app, "chapter", "alpha-main", "1.2")
-            self.assert_reference(app, "refs", "alpha-main", "1.2 Overview")
+            self.assert_reference(app, "refs", "alpha-main", "Section 1.2")
 
     def test_incremental_numref_only_references_are_updated(self):
         self.prepare()
@@ -426,7 +426,7 @@ chapters:
         self.prepare(chapter=numbered)
         self.write({"refs.md": "# References\n\n{secref}`alpha-main`\n"})
         with self.app() as app:
-            self.assert_reference(app, "refs", "alpha-main", "1.1 Overview")
+            self.assert_reference(app, "refs", "alpha-main", "Section 1.1")
         self.write({"chapter.md": unnumbered})
         with self.app(freshenv=False) as app:
             self.assert_heading(app, "chapter", "alpha-main", None)
@@ -434,7 +434,7 @@ chapters:
         self.write({"chapter.md": numbered})
         with self.app(freshenv=False) as app:
             self.assert_heading(app, "chapter", "alpha-main", "1.1")
-            self.assert_reference(app, "refs", "alpha-main", "1.1 Overview")
+            self.assert_reference(app, "refs", "alpha-main", "Section 1.1")
 
     def test_noop_build_does_not_rewrite_documents(self):
         self.prepare()
@@ -480,14 +480,14 @@ chapters:
             self.assert_heading(app, "chapter", "alpha-intro-child", None)
             self.assert_heading(app, "chapter", "alpha-main", "1.1")
             self.assert_reference(app, "refs", "alpha-intro-child", "Inherited child")
-            self.assert_reference(app, "refs", "alpha-main", "1.1 Main section")
+            self.assert_reference(app, "refs", "alpha-main", "Section 1.1")
 
     def test_parallel_write_preserves_proof_counters(self):
         self.prepare()
         with self.app(parallel=2) as app:
             self.assert_heading(app, "chapter", "alpha-aside", None)
             self.assert_heading(app, "chapter", "alpha-next", "1.2")
-            self.assert_reference(app, "refs", "alpha-main", "1.1 Overview")
+            self.assert_reference(app, "refs", "alpha-main", "Section 1.1")
             self.assert_reference(app, "refs", "alpha-aside", "Overview")
             self.assertEqual(app.env.toc_fignumbers["chapter"]["proof"]["statement-deep"], (1, 1, 3))
 

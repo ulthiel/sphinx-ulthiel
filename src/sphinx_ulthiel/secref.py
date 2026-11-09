@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from docutils import nodes
@@ -72,9 +73,36 @@ def find_secnum(env: Any, docname: str, labelid: str, sectname: str):
     return None
 
 
+def section_prefix(app: Sphinx, doctree: nodes.document) -> str:
+    """Use the referring document's language, falling back to Sphinx's language."""
+    language = app.config.language or "en"
+    marker = re.compile(
+        r"\s*LTeX:\s*language\s*=\s*([a-z]+(?:[-_][a-z0-9]+)*)\s*",
+        re.IGNORECASE,
+    )
+    for node in doctree.findall(
+        lambda item: isinstance(item, (nodes.comment, nodes.raw))
+    ):
+        comments = (
+            [node.astext()]
+            if isinstance(node, nodes.comment)
+            else re.findall(r"<!--(.*?)-->", node.astext(), re.DOTALL)
+        )
+        for comment in comments:
+            match = marker.fullmatch(comment)
+            if match:
+                language = match[1]
+                break
+        else:
+            continue
+        break
+    return "Abschnitt" if re.split(r"[-_]", language.lower())[0] == "de" else "Section"
+
+
 def resolve_secref(app: Sphinx, doctree: nodes.document, fromdocname: str) -> None:
     env = app.builder.env
     labels = env.domains["std"].data["labels"]
+    prefix = section_prefix(app, doctree)
 
     for node in doctree.findall(secref_node):
         target = node["reftarget"]
@@ -93,7 +121,7 @@ def resolve_secref(app: Sphinx, doctree: nodes.document, fromdocname: str) -> No
         secnum = find_secnum(env, docname, labelid, sectname)
 
         if secnum:
-            reftext = ".".join(str(i) for i in secnum) + " " + sectname
+            reftext = prefix + " " + ".".join(str(i) for i in secnum)
         else:
             reftext = sectname
 

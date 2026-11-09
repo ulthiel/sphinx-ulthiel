@@ -70,9 +70,14 @@ In reStructuredText, use `.. rst-class:: unnumbered` immediately before the
 section heading. The extension works with Sphinx's standard numbering and
 with `sphinx-multitoc-numbering`, including Jupyter Book v1's external TOCs.
 
-Use `{secref}` with a section label to link to its number and title. For an
-unnumbered section this role displays only the linked title. Use rubrics for
-non-structural headings that should stay out of the TOC.
+Use `{secref}` with a section label to render a numbered target as
+`Section 1.2.3`, without its title. An unnumbered target displays only its linked
+title, including headings below the configured numbering depth. The title remains
+available as a tooltip. References use the language of the referring document:
+`Abschnitt 1.2.3` for German, otherwise `Section 1.2.3`. The document's LTeX
+language comment (for example `<!-- LTeX: language=de-DE -->`) takes precedence
+over Sphinx's `language` setting. Use rubrics for non-structural headings that
+should stay out of the TOC.
 
 ## Development tests
 
@@ -86,3 +91,5 @@ python -m unittest discover -s tests -v
 The tests build small Sphinx projects and check rendered headings, TOCs,
 references, figure and proof counters, and incremental rebuilds. The test
 extra uses the `ulthiel/sphinx-proof` fork for its shared statement counter.
+
+Assisted-by: Codex (gpt-6.1-sol) — updated section-reference formatting and regression tests.
